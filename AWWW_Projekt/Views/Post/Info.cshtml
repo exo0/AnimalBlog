@@ -1,0 +1,44 @@
+﻿@model AWWW_Projekt.ViewModels.PostListItemViewModel
+
+<div class="row">
+    <div class="col-12">
+        Informacje
+    </div>
+</div>
+
+<div class="row">
+</div>
+<div class="row">
+    <div class="col-9">
+        <h1 style="color: #dbc16c;">Tytuł: @Model.Title</h1>
+    </div>
+    <div class="col-3">
+        <h5 style="color:bisque">Data utworzenia: @Model.CreatedTime</h5>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        @Model.Content
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        Author: miejsce na autor //Brak metody
+    </div>
+</div>
+<div class="row mt-1">
+    <div class="col-3 border-right border-light">
+        Ocena: @Model.Rating
+    </div>
+    <div class="col-1">
+        <a asp-controller="Home" asp-action="Rate" asp-route-id="@Model.Id">Like</a>
+        <a asp-controller="Home" asp-action="RateDown" asp-route-id="@Model.Id">Minus</a>
+    </div>
+    <div class="col-8">
+        <div class="butony">
+            @*<a class="btn btn-info float-right" asp-controller="Home" asp-action="Info" asp-route-id="@post.Id">Info</a>*@
+            <a class="btn btn-success float-right" asp-controller="" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <a class="btn btn-danger float-right" asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+        </div>
+    </div>
+</div>
