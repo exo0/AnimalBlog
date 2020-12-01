@@ -18,7 +18,7 @@ namespace AWWW_Projekt.Controllers
             _postListService = postListService;
             ViewData["Title"] = "Animal Blog";
         }
-
+        [HttpGet]
         public IActionResult Index()
         {
             var vm = _postListService.GetAllPosts();

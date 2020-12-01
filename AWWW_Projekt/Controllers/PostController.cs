@@ -11,7 +11,7 @@ namespace AWWW_Projekt.Controllers
     public class PostController : Controller
     {
         private PostListService _postListService;
-        
+
         public PostController(PostListService postListService)
         {
             _postListService = postListService;
@@ -28,14 +28,14 @@ namespace AWWW_Projekt.Controllers
             var vm = _postListService.GetPost(id);
             return View(vm);
         }
-        
+
         public IActionResult Delete(int id)
         {
             var vm = _postListService.GetPost(id);
             return View(vm);
         }
 
-        
+
         public IActionResult DeleteConfirmed(int id)
         {
             _postListService.DeletePost(id);
@@ -47,12 +47,12 @@ namespace AWWW_Projekt.Controllers
             var vm = _postListService.GetPost(id);
             return View(vm);
         }
+        public IActionResult EditPost(int id, string title, string description, string content)
+        {
+                _postListService.UpdatePost(id, title, description, content);
+                return RedirectToAction("Index", "Home");
 
-        //public IActionResult SaveEdit(PostListItemViewModel data)
-        //{
-        //    _postListService.Update()
-        //}
-
+        }
         public IActionResult Add(NewPostViewModel data)
         {
             if (!ModelState.IsValid)

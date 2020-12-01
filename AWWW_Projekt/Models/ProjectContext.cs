@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWWW_Projekt.Models
 {
-    public class ProjectContext : DbContext
+    public class ProjectContext : IdentityDbContext
     {
         public ProjectContext([NotNullAttribute] DbContextOptions options) : base(options) { }
         public DbSet<Post> Posts { get; set; }
@@ -17,7 +17,7 @@ namespace AWWW_Projekt.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
             //modelBuilder.Entity<PostsTags>()
             //    .HasKey(x => new { x.PostId, x.TagId });
 

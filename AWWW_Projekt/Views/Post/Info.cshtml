@@ -7,6 +7,14 @@
 </div>
 
 <div class="row">
+    <div class="col-12">
+        <p>
+            @foreach (var tag in Model.Tags)
+            {
+        <span class="badge badge-primary">@tag.Title </span>}
+        </p>
+    </div>
+    
 </div>
 <div class="row">
     <div class="col-9">

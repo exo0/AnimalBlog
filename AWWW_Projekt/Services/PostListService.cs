@@ -1,9 +1,12 @@
 ﻿using AWWW_Projekt.Models;
 using AWWW_Projekt.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+
 
 namespace AWWW_Projekt.Services
 {
@@ -39,8 +42,13 @@ namespace AWWW_Projekt.Services
         
         public PostListItemViewModel GetPost(int id)
         {
-            var post = _context.Posts.Find(id);
+            //var post = _context.Posts.Find(id);
+            var post = _context.Posts
+                .Where(b => b.Id == id)
+                .Include(b => b.Tags)
+                .FirstOrDefault();
             var postId = post.Id;
+
             var vm = new PostListItemViewModel
             {
                 Id = post.Id,
@@ -102,9 +110,23 @@ namespace AWWW_Projekt.Services
 
     }
 
-    public void UpdatePost(string title, string description,string contect,string usrTags)
+    public void UpdatePost(int id, string title,string description,string contect)
         {
-            var tags = usrTags.Split(',');
+            //var postINDB = _context.Posts.Find(id);
+
+            var postINDB = _context.Posts
+                .Where(b => b.Id == id)
+                .Include(b => b.Tags)
+                .FirstOrDefault();
+
+            if (id == postINDB.Id)
+            {
+                postINDB.Title = title;
+                postINDB.Description = description;
+                postINDB.Content = contect;
+            }
+            _context.Posts.Update(postINDB);
+            _context.SaveChanges();
         }
         /// <summary>
         /// Just for testing
