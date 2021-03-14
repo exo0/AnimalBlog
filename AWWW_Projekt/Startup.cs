@@ -33,12 +33,15 @@ namespace AWWW_Projekt
                     Configuration.GetConnectionString("DefaultConnection")));
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //    .AddEntityFrameworkStores<ProjectContext>();
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<ProjectContext>(); // dodanie identyfikacji do systemu 
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddTransient<PostCommentServices>();
             services.AddTransient<PostListService>();
+            services.AddTransient<CategoryServices>();
+            services.AddTransient<RoleService>();
+            services.AddTransient<AccountServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,7 +64,7 @@ namespace AWWW_Projekt
             app.UseRouting();
 
             app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

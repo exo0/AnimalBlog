@@ -14,6 +14,8 @@ namespace AWWW_Projekt.ViewModels
         public string Description { get; set; }
         public string Content { get; set; }
         public string Tags { get; set; }
+        public bool allowComment { get; set; }
+        public int CategoryId { get; set; }
         
     }
 }

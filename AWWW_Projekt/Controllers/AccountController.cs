@@ -6,21 +6,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWWW_Projekt.Services;
 using AWWW_Projekt.ViewModels.IdentityViewModels;
+using AWWW_Projekt.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AWWW_Projekt.Controllers
 {
+    
     public class AccountController : Controller
     {
         private AccountServices accountService;
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly UserManager<User> userManager;
+        private readonly SignInManager<User> signInManager;
 
-        public AccountController(UserManager<IdentityUser> _usermanager,
-            SignInManager<IdentityUser> _signInManager)
+        public AccountController(UserManager<User> _usermanager,
+            SignInManager<User> _signInManager)
         {
             userManager = _usermanager;
             signInManager = _signInManager;
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+
+
+        [Authorize(Roles = "Admin, User")]
         [HttpPost]
     public async Task<IActionResult> Logout()
     {
@@ -28,36 +42,75 @@ namespace AWWW_Projekt.Controllers
         return RedirectToAction("index", "home");
     }
 
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(
+                    model.Email, model.Password, model.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("index", "home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+            }
+
+            return View(model);
+        }
+
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var acc = accountService.GetAllUsers();
+            return View(acc);
+        }
+
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Copy data from RegisterViewModel to IdentityUser
-                var user = new IdentityUser
+
+                var user = new User
                 {
                     UserName = model.Email,
-                    Email = model.Email
+                    Email = model.Email,
+                    Login = model.Email
                 };
 
-                // Store user data in AspNetUsers database table
                 var result = await userManager.CreateAsync(user, model.Password);
 
-                // If user is successfully created, sign-in the user using
-                // SignInManager and redirect to index action of HomeController
                 if (result.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: false);
+                    //await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
 
-                // If there are any errors, add them to the ModelState object
-                // which will be displayed by the validation summary tag helper
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

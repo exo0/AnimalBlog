@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace AWWW_Projekt.Models
 {
-    public class ProjectContext : IdentityDbContext
+    public class ProjectContext : IdentityDbContext<User,Role,int>
     {
         public ProjectContext([NotNullAttribute] DbContextOptions options) : base(options) { }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<PostComment> PostComments { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

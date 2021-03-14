@@ -1,6 +1,6 @@
-﻿@{
-    ViewData["Title"] = "AnimalBlog";
-}
+﻿@{ ViewData["Title"] = "AnimalBlog"; }
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> signInManager
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,8 +25,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-controller="Home" asp-action="Index">Aktualności</a>
                         </li>
+                        
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Category" asp-action="Index">Show Categories</a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-light" asp-controller="Role" asp-action="Index">Roles management</a>
+                                    </li>
+                                    <li>
+                                        <a class="btn btn-info" asp-controller="Account" asp-action="Register">Register user</a>
+                                    </li>
+                            }
+                                    
+                         }
                     </ul>
-                   
+
                 </div>
             </div>
         </nav>

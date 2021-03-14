@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWWW_Projekt.Services;
 using AWWW_Projekt.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AWWW_Projekt.Controllers
 {
@@ -24,6 +25,13 @@ namespace AWWW_Projekt.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         public IActionResult Add(int Id,NewCommentViewModel comment)
         {
             if (!ModelState.IsValid)
@@ -35,6 +43,31 @@ namespace AWWW_Projekt.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-        
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult Delete(int id)
+        {
+            var vm = _commentservices.GetComment(id);
+            return View(vm);
+        }
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _commentservices.DeletePost(id);
+            return RedirectToAction("Index", "Home");
+        }
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult Edit(int id)
+        {
+            var vm = _commentservices.GetComment(id);
+            return View(vm);
+        }
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult EditComment(int id, string title,string content,string commentAuthor)
+        {
+            _commentservices.UpdateComment(id,title,content,commentAuthor);
+            
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }

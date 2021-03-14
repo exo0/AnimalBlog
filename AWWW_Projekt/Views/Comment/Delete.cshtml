@@ -1,0 +1,38 @@
+﻿@model AWWW_Projekt.ViewModels.CommentListItemViewModel
+
+<div class="row">
+    <div class="col-9">
+        <h1 style="color: #dbc16c;">Tytuł: @Model.Title</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        @Model.Content
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        Autor: @Model.CommentAuthor
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        Czy na pewno chcesz usunac komentarz ?
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <a class="btn btn-info float-right" asp-controller="Home" asp-action="Index">Nie</a>
+    </div>
+    <div class="col-6">
+        <a class="btn btn-danger float-left" asp-controller="Comment" asp-action="DeleteConfirmed" asp-route-id="@Model.Id">TAK</a>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

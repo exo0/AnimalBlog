@@ -1,0 +1,37 @@
+﻿@model AWWW_Projekt.ViewModels.IdentityViewModels.UserListViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> signInManager
+
+@if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+{
+    <div class="row">
+        <div class="3">
+            <a class="btn btn-info" asp-controller="Role" asp-action="Index">Roles management</a>
+        </div>
+        <div class="3">
+            <div class="3">
+                <a class="btn btn-info" asp-controller="Account" asp-action="Index">User Management</a>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@foreach (var user in Model.Users)
+{
+    <div class="row">
+        <div class="col-6">
+            <p class="border-right border-dark">
+                First Name: @user.Name
+            </p>
+        </div>
+        <div class="col-6">
+            <p class="border-right border-dark">
+                Last Name: @user.Surname
+            </p>
+        </div>
+    </div>
+
+}

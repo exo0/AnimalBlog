@@ -1,80 +1,121 @@
 ﻿@model AWWW_Projekt.ViewModels.PostListViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> signInManager
 
-@foreach (var post in Model.Posts)
+@if (signInManager.IsSignedIn(User) && (User.IsInRole("User") || User.IsInRole("Admin")))
 {
-<div class="row">
     <div class="col-12">
         <a class="btn btn-info float-right" asp-controller="Post" asp-action="Add">Dodaj post</a>
     </div>
-    
+}
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="float-left">
+            <form asp-controller="Home" asp-action="Index" method="get">
+                <p>
+                    Tag: <input type="text" name="SearchString" />
+                    <input type="submit" value="Filter" />
+                </p>
+            </form>
+        </div>
+
+    </div>
 </div>
-    <div class="row">
-        <div class="col-12">
-            <p>
-                @foreach (var tag in @post.Tags)
-                {
-                    <span class="badge badge-primary">@tag.Title </span>
-                }
-            </p>
+@foreach (var post in Model.Posts)
+{
+<div class="row">
 
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-9">
-            <h1 style="color: #dbc16c;">Tytuł: @post.Title</h1>
-        </div>
-        <div class="col-3">
-            <h5 style="color:bisque">Data utworzenia: @post.CreatedTime</h5>
-        </div>
-    </div>
-    <div class="row">
 
-        <div class="col-12">
-            @post.Content
-        </div>
-    </div>
-    <div class="row mt-1">
-        <div class="col-3 border-right border-light">
-            Ocena: @post.Rating
-        </div>
-        <div class="col-1">
-            <a asp-controller="Home" asp-action="Rate" asp-route-id="@post.Id">Like</a>
-            <a asp-controller="Home" asp-action="RateDown" asp-route-id="@post.Id">Minus</a>
-        </div>
-        <div class="col-8">
-            <div class="butony">
-                <a class="btn btn-info float-right" asp-controller="Post" asp-action="Info" asp-route-id="@post.Id">Info</a>
-                <a class="btn btn-success float-right" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
-                <a class="btn btn-danger float-right" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>
-            </div>
-        </div>
-    </div>
-    <div>
+</div>
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            @foreach (var tag in @post.Tags)
+                            {
+            <span class="badge badge-primary">@tag.Title </span>}
+                        </p>
 
-        <div>
-            <div class="mt-1">Sekcja komentarzy</div>
-            <hr style="color: whitesmoke"/>
-            <div class="container border border-info rounded">
-                @foreach (var comments in @post.Comments)
-                {
-                    <div class="container-fluid mt-1 mb-1 border border-light rounded">
-                        <div class="h3 p-1">Tytuł: @comments.Title</div>
-                        <div class="h5 p-1">Komentarz: @comments.Content</div>
-                        <p class="p-1">Podpis: @comments.CommentAuthor</p>
                     </div>
-
-
-                }
-            </div>
-            <div class="row mt-1">
-                <div class="col-12">
-                    <a class="btn btn-outline-info float-right" asp-controller="Comment" asp-action="Add" asp-route-id="@post.Id">Dodaj komentarz</a>
                 </div>
-                
-            </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h3 style="color: #dbc16c;">
+                                            Kategoria:
+                                            @foreach (var cat in post.Categories)
+                                            {
+                            @cat.Title}
+                                        </h3>
+                                    </div>
+                                </div>
+                                                <div class="row">
+                                                    <div class="col-9">
+                                                        <h1 style="color: #dbc16c;">Tytuł: @post.Title</h1>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <h5 style="color:bisque">Data utworzenia: @post.CreatedTime</h5>
+                                                    </div>
+                                                </div>
+                                                                <div class="row">
 
-        </div>
+                                                                    <div class="col-12">
+                                                                        @post.Content
+                                                                    </div>
+                                                                </div>
+                                                                                <div class="row mt-1">
+                                                                                    <div class="col-3 border-right border-light">
+                                                                                        Ocena: @post.Rating
+                                                                                    </div>
+                                                                                    <div class="col-1">
+                                                                                        <a asp-controller="Home" asp-action="Rate" asp-route-id="@post.Id">Like</a>
+                                                                                        <a asp-controller="Home" asp-action="RateDown" asp-route-id="@post.Id">Minus</a>
+                                                                                    </div>
+                                                                                    <div class="col-8">
+                                                                                        <div class="butony">
+                                                                                            @if (signInManager.IsSignedIn(User) && (User.IsInRole("User") || User.IsInRole("Admin")))
+                                                                                            {
+                                                                            <a class="btn btn-info float-right" asp-controller="Post" asp-action="Info" asp-route-id="@post.Id">Info</a>
+                                                                                                <a class="btn btn-success float-right" asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                                                                                                                    <a class="btn btn-danger float-right" asp-controller="Post" asp-action="Delete" asp-route-id="@post.Id">Delete</a>}
 
-    </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                                <div>
+                                                                                                    @if (post.allowComment == true)
+                                                                                                    {
+                                                                                    <div>
+                                                                                        <div class="mt-1">Sekcja komentarzy</div>
+                                                                                        <hr style="color: whitesmoke" />
+                                                                                        <div class="container border border-info rounded">
+                                                                                            @foreach (var comments in @post.Comments)
+                                                                                            {
+                                                                                            <div class="container-fluid mt-1 mb-1 border border-light rounded">
+                                                                                                <div class="h3 p-1">Tytuł: @comments.Title</div>
+                                                                                                <div class="h5 p-1">Komentarz: @comments.Content</div>
+                                                                                                <p class="p-1">Podpis: @comments.CommentAuthor</p>
+                                                                                                @if (signInManager.IsSignedIn(User) && (User.IsInRole("User") || User.IsInRole("Admin")))
+                                                                                                {
+                                                                                                         <a class="btn btn-danger" asp-controller="Comment" asp-action="Delete" asp-route-id="@comments.Id">Delete</a>
+                                                                                                         <a class="btn btn-info" asp-controller="Comment" asp-action="Edit" asp-route-id="@comments.Id">Edit</a>}
 
+                                                                                            </div>}
+                                                                                        </div>
+                                                                                        <div class="row mt-1">
+                                                                                            <div class="col-12">
+                                                                                                <a class="btn btn-outline-info float-right" asp-controller="Comment" asp-action="Add" asp-route-id="@post.Id">Dodaj komentarz</a>
+                                                                                            </div>
+
+                                                                                        </div>
+
+                                                                                    </div> }
+                                                                                else
+                                                                                {
+                                                                <h3>Możliwość komentowania wyłączona</h3>}
+
+
+                                                                                                </div>
+                                                                                                                <hr class="mb-3" style="height:2px;border-width:0;color:whitesmoke;background-color:whitesmoke">
 }

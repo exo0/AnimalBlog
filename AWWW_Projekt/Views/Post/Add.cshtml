@@ -21,5 +21,15 @@
         <textarea asp-for="Tags" class="form-control"></textarea>
         <span asp-validation-for="Tags" class="text-danger"></span>
     </div>
+    <div class="form-check">
+        <label asp-for="allowComment" class="control-label">Zezwoj na komentarze </label>
+        <input asp-for="allowComment" />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Kategoria</label>
+        <select asp-for="CategoryId" class="form-control"
+                asp-items="ViewBag.Categories"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
     <button class="btn btn-block btn-primary" type="submit">Dodaj</button>
 </form>

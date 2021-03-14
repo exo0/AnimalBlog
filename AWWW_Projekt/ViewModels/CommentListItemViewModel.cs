@@ -12,6 +12,7 @@ namespace AWWW_Projekt.ViewModels
         public string Title { get; set; }
         public string Content { get; set; }
         public string CommentAuthor { get; set; }
+       
 
     }
 }

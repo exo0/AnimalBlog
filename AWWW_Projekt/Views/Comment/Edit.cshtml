@@ -1,11 +1,11 @@
-﻿@model AWWW_Projekt.ViewModels.PostListItemViewModel
+﻿@model AWWW_Projekt.ViewModels.CommentListItemViewModel
 <h1>Edit</h1>
 
-<h4>Post</h4>
+<h4>Edytuj post</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditPost">
+        <form asp-action="EditComment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -19,18 +19,9 @@
 
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-            </div>
-            <div class="form-check">
-                <label asp-for="allowComment" class="control-label">Zezwoj na komentarze </label>
-                <input asp-for="allowComment" />
-            </div>
-            <div class="form-group">
-                <label class="control-label">Kategoria</label>
-                <select asp-for="CategoryId" class="form-control"
-                        asp-items="ViewBag.Categories"></select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                <label asp-for="CommentAuthor" class="control-label"></label>
+                <input asp-for="CommentAuthor" class="form-control" />
+
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

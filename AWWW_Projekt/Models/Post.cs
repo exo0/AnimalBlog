@@ -16,6 +16,7 @@ namespace AWWW_Projekt.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Content { get; set; }
+        public bool allowComment { get; set; }
         public DateTime CreateTime { get; set; }
         public DateTime UpdateTime { get; set; }
         [ForeignKey(nameof(Author))]
@@ -25,6 +26,7 @@ namespace AWWW_Projekt.Models
 
         //private ICollection<Rate> Rates { get; set; }
         public virtual ICollection<Tag> Tags { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
         public ICollection<PostComment> Comments { get; set; }
 
     }

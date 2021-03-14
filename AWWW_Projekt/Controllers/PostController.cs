@@ -1,24 +1,29 @@
 ﻿using AWWW_Projekt.Services;
 using AWWW_Projekt.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace AWWW_Projekt.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class PostController : Controller
     {
         private PostListService _postListService;
+        private CategoryServices _categoryServices;
 
-        public PostController(PostListService postListService)
+        public PostController(PostListService postListService,CategoryServices categoryServices)
         {
+            _categoryServices = categoryServices;
             _postListService = postListService;
         }
 
         [HttpGet]
-        public IActionResult Add()
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
         {
             return View();
         }
@@ -44,23 +49,43 @@ namespace AWWW_Projekt.Controllers
 
         public IActionResult Edit(int id)
         {
+            var categories = _categoryServices.ReturnAllCategoryToDropDown();
+            ViewBag.Categories = categories.Select(x => new SelectListItem()
+            {
+                Text = x.Title,
+                Value = x.Id.ToString()
+            });
             var vm = _postListService.GetPost(id);
             return View(vm);
         }
-        public IActionResult EditPost(int id, string title, string description, string content)
+        public IActionResult EditPost(int id, string title, string description,bool allowComment, string content, int CategoryId)
         {
-                _postListService.UpdatePost(id, title, description, content);
+                _postListService.UpdatePost(id, title, allowComment, description, content, CategoryId);
                 return RedirectToAction("Index", "Home");
 
         }
-        public IActionResult Add(NewPostViewModel data)
+
+        [HttpGet]
+        public IActionResult Add()
+        {
+            var categories = _categoryServices.ReturnAllCategoryToDropDown();
+            ViewBag.Categories = categories.Select(x => new SelectListItem()
+            {
+                Text = x.Title,
+                Value = x.Id.ToString()
+            });
+            return View();
+        }
+
+        public async System.Threading.Tasks.Task<IActionResult> Add(NewPostViewModel data)
         {
             if (!ModelState.IsValid)
             {
                 return View(data);
             }
+            var usr = HttpContext.User.Identity.Name;
 
-            _postListService.Add(data.Title, data.Description, data.Content, data.Tags);
+            await _postListService.Add(usr,data.Title, data.Description,data.allowComment, data.Content, data.Tags,data.CategoryId);
 
             return RedirectToAction("Index", "Home");
         }

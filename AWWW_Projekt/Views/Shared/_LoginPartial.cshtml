@@ -1,6 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+
 
 <ul class="navbar-nav">
     @*If the user is signed-in display Logout link*@
@@ -8,8 +11,7 @@
     {
         <li class="nav-item">
             <form method="post" asp-controller="account" asp-action="logout">
-                <button type="submit" style="width:auto"
-                        class="nav-link btn btn-link py-0">
+                <button type="submit" style="width:auto" class="nav-link btn btn-link py-0">
                     Logout @User.Identity.Name
                 </button>
             </form>
@@ -17,15 +19,18 @@
     }
     else
     {
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="account" asp-action="register">
-                Register
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-controller="account" asp-action="login">
-                Login
-            </a>
-        </li>
+        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+        {
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="account" asp-action="register">
+                        Register
+                    </a>
+                </li>
+        }
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="account" asp-action="login">
+                        Login
+                    </a>
+                </li>
     }
 </ul>

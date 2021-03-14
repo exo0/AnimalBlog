@@ -1,11 +1,12 @@
 ﻿using AWWW_Projekt.Models;
 using AWWW_Projekt.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.Web;
 
 
 namespace AWWW_Projekt.Services
@@ -13,11 +14,19 @@ namespace AWWW_Projekt.Services
     public class PostListService
     {
         private readonly ProjectContext _context;
+        private SignInManager<User> SignInManager;
+        private UserManager<User> UserManager;
+        //private readonly CategoryServices _categoryServices;
 
-        public PostListService(ProjectContext context)
+        public PostListService(ProjectContext context, SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _context = context;
+            SignInManager = signInManager;
+            UserManager = userManager;
+            //_categoryServices = categoryServices;
         }
+
+
 
         public PostListViewModel GetAllPosts()
         {
@@ -27,14 +36,44 @@ namespace AWWW_Projekt.Services
                 {
                     Id = x.Id,
                     Content = x.Content,
-                    CreatedTime = DateTime.Now,
+                    CreatedTime = x.CreateTime,
                     Description = x.Description,
+                    allowComment = x.allowComment,
                     Rating = x.Rating,
                     Title = x.Title,
                     Tags = x.Tags,
-                    Comments = x.Comments
+                    Comments = x.Comments,
+                    Categories = x.Categories
 
                 })
+            };
+            return vm;
+        }
+
+        public PostListViewModel GetAllPostFiltered(string searchString)
+        {
+            
+            var vm = new PostListViewModel
+            {
+                Posts = _context.Posts
+                .Include(e=> e.Tags)
+                .Where(e=> e.Tags.Any(i=>i.Title.Contains(searchString)))
+                .Select(x => new PostListItemViewModel
+                {
+                    Id = x.Id,
+                    Content = x.Content,
+                    CreatedTime = x.CreateTime,
+                    Description = x.Description,
+                    allowComment = x.allowComment,
+                    Rating = x.Rating,
+                    Title = x.Title,
+                    Tags = x.Tags,
+                    Comments = x.Comments,
+                    Categories = x.Categories
+
+                })
+                
+                
             };
             return vm;
         }
@@ -46,6 +85,7 @@ namespace AWWW_Projekt.Services
             var post = _context.Posts
                 .Where(b => b.Id == id)
                 .Include(b => b.Tags)
+                .Include(b=> b.Categories)
                 .FirstOrDefault();
             var postId = post.Id;
 
@@ -53,12 +93,14 @@ namespace AWWW_Projekt.Services
             {
                 Id = post.Id,
                 Content = post.Content,
-                CreatedTime = DateTime.Now,
+                CreatedTime = post.CreateTime,
                 Description = post.Description,
                 Rating = post.Rating,
+                allowComment = post.allowComment,
                 Title = post.Title,
                 Tags = post.Tags,
-                Comments = post.Comments
+                Comments = post.Comments,
+                Categories = post.Categories
 
 
             };
@@ -81,23 +123,28 @@ namespace AWWW_Projekt.Services
     /// <summary>
     /// Creates new post
     /// </summary>
-    public void Add(string title, string description, string content, string usrTags)
+    public async Task Add(string usrId,string title, string description,bool _allowComment, string content, string usrTags,int categoryId)
     {
-        var tags = usrTags.Split(',');
+            var tags = usrTags.Split(',');
+            Category cat = _context.Categories.Find(categoryId);
+            var ussr = await UserManager.FindByNameAsync(usrId);
+            
 
-        var post = new Models.Post
-        {
-            Title = title,
-            Description = description,
-            Content = content,
-            Author = new User { Name = "Guest", Login = "Anonymous" },
-            AuthorId = 1,
-            CreateTime = DateTime.Now,
-            UpdateTime = DateTime.Now,
-            Tags = tags.Select(x => new Tag { Title = x }).ToList(),
-            Comments = new List<PostComment>()
+            var post = new Models.Post
+            {
+                Title = title,
+                Description = description,
+                Content = content,
+                Author = ussr,
+                AuthorId = 1,
+                CreateTime = DateTime.Now,
+                UpdateTime = DateTime.Now,
+                allowComment = _allowComment,
+                Tags = tags.Select(x => new Tag { Title = x }).ToList(),
+                Comments = new List<PostComment>(),
+                Categories = new List<Category>()
         };
-
+            post.Categories.Add(cat);
         _context.Posts.Add(post);
         _context.SaveChanges();
     }
@@ -110,20 +157,32 @@ namespace AWWW_Projekt.Services
 
     }
 
-    public void UpdatePost(int id, string title,string description,string contect)
+    public void UpdatePost(int id, string title,bool _allowComment,string description,string contect,int CategoryId)
         {
             //var postINDB = _context.Posts.Find(id);
-
+            var cat = _context.Categories.Find(CategoryId);
             var postINDB = _context.Posts
                 .Where(b => b.Id == id)
                 .Include(b => b.Tags)
+                .Include(b => b.Categories)
                 .FirstOrDefault();
-
-            if (id == postINDB.Id)
+            if (postINDB.Categories.Count() == 0)
             {
-                postINDB.Title = title;
-                postINDB.Description = description;
-                postINDB.Content = contect;
+
+            }
+            else
+            {
+                var currentCat = postINDB.Categories.First();
+                if (id == postINDB.Id)
+                {
+                    postINDB.Title = title;
+                    postINDB.Description = description;
+                    postINDB.Content = contect;
+                    postINDB.allowComment = _allowComment;
+                    postINDB.Categories.Remove(currentCat);
+                    postINDB.Categories.Add(cat);
+
+                }
             }
             _context.Posts.Update(postINDB);
             _context.SaveChanges();

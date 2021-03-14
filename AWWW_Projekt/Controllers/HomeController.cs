@@ -18,10 +18,24 @@ namespace AWWW_Projekt.Controllers
             _postListService = postListService;
             ViewData["Title"] = "Animal Blog";
         }
+
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string searchString)
         {
-            var vm = _postListService.GetAllPosts();
+            var vm = new ViewModels.PostListViewModel();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                vm = _postListService.GetAllPostFiltered(searchString);
+            }
+            else
+            {
+                vm = _postListService.GetAllPosts();
+            }
+
+
+            
+
+
             return View(vm);
         }
 

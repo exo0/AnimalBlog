@@ -1,0 +1,15 @@
+﻿using AWWW_Projekt.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace AWWW_Projekt.ViewModels.CategoryViewModels
+{
+    public class CategoryListItemViewModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public ICollection<Post> Posts { get; set; }
+    }
+}
